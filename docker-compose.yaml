@@ -6,14 +6,14 @@ networks:
 
 services:
   ros-master:
-    image: sail_sim
+    image: rhysmainwaring/sail-sim
     command: stdbuf -o L roscore
     networks:
       - ros
     restart: always
 
   gazebo:
-    image: sail_sim
+    image: rhysmainwaring/sail-sim
     depends_on:
       - ros-master
     environment:
@@ -28,7 +28,7 @@ services:
     restart: always
 
   sail-controller:
-    image: sail_sim
+    image: rhysmainwaring/sail-sim
     depends_on:
       - ros-master
     environment:
@@ -40,7 +40,7 @@ services:
     restart: always
 
   twist-translate:
-    image: sail_sim
+    image: rhysmainwaring/sail-sim
     depends_on:
       - ros-master
     environment:
@@ -52,7 +52,7 @@ services:
     restart: always
 
   steering:
-    image: sail_sim
+    image: rhysmainwaring/sail-sim
     depends_on:
       - ros-master
     environment:
@@ -67,7 +67,7 @@ services:
     restart: always
 
   rviz:
-    image: sail_sim
+    image: rhysmainwaring/sail-sim
     depends_on:
       - ros-master
     environment:

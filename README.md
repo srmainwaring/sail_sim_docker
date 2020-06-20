@@ -1,22 +1,27 @@
 # Docker file for Sailing Simulation
 
-Docker file and scripts.
-
-- [wilselby/ouster_example](https://github.com/wilselby/ouster_example).
-
-
-Dependencies:
-
-```bash
-git clone https://github.com/ccny-ros-pkg/imu_tools.git
-git checkout melodic
-```
-
-
 Building:
 
 ```bash
-sudo docker build -rm -t sail_sim .
+git clone ssh://rhys@diskstation.local:/volume1/git/robotics/sail_sim_docker.git
+cd sail_sim_docker && checkout develop
+
+mkdir src && cd src
+git clone ssh://rhys@diskstation.local:/volume1/git/robotics/asv_sim.git
+git clone ssh://rhys@diskstation.local:/volume1/git/robotics/asv_wave_sim.git
+git clone ssh://rhys@diskstation.local:/volume1/git/robotics/rs750.git
+
+cd ~/sail_sim_docker/src/rs750
+git checkout feature/controller
+
+cd ~/sail_sim_docker/src/asv_sim
+git checkout feature/docker
+
+cd ~/sail_sim_docker/src/asv_wave_sim
+git checkout feature/fft_waves
+
+cd ~/sail_sim_docker
+sudo docker build -t rhysmainwaring/sail-sim .
 ```
 
 Running (recklessly insecure):
@@ -25,11 +30,11 @@ Running (recklessly insecure):
 # !!!!!!!!!
 xhost +
 
-sudo docker run -it -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix --name sail_sim sail_sim
+sudo docker run -it -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix --name rhysmainwaring/sail-sim sail-sim
 ```
 
 ```bash
-sudo docker exec -it sail_sim bash
+sudo docker exec -it sail-sim bash
 ```
 
 ## Links
@@ -38,7 +43,6 @@ Stack Overflow discussion:
 
 - [Can you run GUI applications in a Docker container?](https://stackoverflow.com/questions/16296753/can-you-run-gui-applications-in-a-docker-container/25280523#25280523)
 - [Running GUI apps with Docker](http://fabiorehm.com/blog/2014/09/11/running-gui-apps-with-docker/)
-
 
 Security Concerns:
 
@@ -66,7 +70,6 @@ A review of Docker for Mac
 
 - [Docker for Mac: neat, fast, and flawed.](https://blog.bennycornelissen.nl/post/docker-for-mac-neat-fast-and-flawed/)
 
-
 ROS Answers:
 
 - [Running ROS and its gui tools through a docker image](https://answers.ros.org/question/313786/running-ros-and-its-gui-tools-through-a-docker-image/)
@@ -75,15 +78,41 @@ Discussion of ROS entrypoint files:
 
 - [Unable to override osrf/ros entrypoint](https://answers.ros.org/question/320375/unable-to-override-osrfros-entrypoint/)
 
-
 ROS docker tutorials:
 
 - [dockerTutorialsCompose](http://wiki.ros.org/docker/Tutorials/Compose)
 - [dockerTutorialsNetwork](https://wiki.ros.org/docker/Tutorials/Network)
 - [dockerTutorialsGUI](https://wiki.ros.org/docker/Tutorials/GUI)
 
+ROS docker examples
 
-## Runtime warnings
+- [wilselby/ouster_example](https://github.com/wilselby/ouster_example).
+
+## Appendix: runtime warnings
+
+Open:
+
+These warnings appear when running the session on an Ubuntu 18.04 VM running in
+VMware Fusion 11.5.5. They are OpenGL / GPU / hardware acceleration issues.
+
+- `QStandardPaths: XDG_RUNTIME_DIR not set, defaulting to '/tmp/runtime-root'`
+- `libGL error: failed to open drm device: No such file or directory`
+- `libGL error: failed to load driver: vmwgfx`
+
+Closed:
+
+This issue was due to a missing dependency on `rviz_imu_plugin`. It has been fixed
+by adding `ros-melodic-imu-tools` to the Dockerfile.
+
+- `rviz_imu_plugin/Imu' failed to load.  Error: According to the loaded plugin descriptions the class rviz_imu_plugin/Imu with base class type rviz::Display does not exist.`
+
+Ignore:
+
+The following messages are from Gazebo and can be safely ignored.
+
+- `[Wrn] [msgs.cc:1852] Conversion of sensor type[anemometer] not supported.`
+- `[Err] [msgs.cc:2883] Unrecognized geometry type`
+- `[Wrn] [msgs.cc:1852] Conversion of sensor type[anemometer] not supported.`
 
 ```console
 $ sudo docker-compose up
