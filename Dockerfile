@@ -28,35 +28,44 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # 
 RUN apt-get update && apt-get install -y --no-install-recommends \	
     fftw3 \
-    ros-melodic-hector-gazebo-plugins \
     libcgal-dev \
     libclfft-dev \
     libfftw3-dev \
     ocl-icd-opencl-dev \
     opencl-headers \
+    ros-melodic-hector-gazebo-plugins \
+    ros-melodic-imu-tools \
     && rm -rf /var/lib/apt/lists/*
 
 # Install python packages
 RUN pip install --upgrade \
-    catkin_tools \
     wheel
+
+RUN pip install --upgrade \
+    catkin_tools
 
 # Use bash
 SHELL ["/bin/bash", "-c"]
 
 # Create a catkin workspace
-RUN mkdir -p catkin_ws/src
+RUN mkdir -p /catkin_ws/src
 
 # Copy packages into the workspace
 WORKDIR /catkin_ws
-COPY /src/asv_sim src/
-COPY /src/asv_wave_sim src/
-COPY /src/rs750 src/
+COPY /src/asv_sim/ src/asv_sim
+COPY /src/asv_wave_sim/ src/asv_wave_sim
+COPY /src/rs750/ src/rs750
 
-# Configure and build
+# Configure, build and cleanup
 RUN source /opt/ros/melodic/setup.bash \
-    catkin config --install --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-    && catkin build
+    && catkin init \
+    && catkin clean -y \
+    && catkin config \
+        --extend /opt/ros/melodic \
+        --install \
+        --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+    && catkin build \
+    && rm -rf .catkin_tools .vscode build devel logs src  
 
 # Define entrypoint
 COPY ./docker-entrypoint.sh /
