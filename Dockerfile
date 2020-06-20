@@ -28,6 +28,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # 
 RUN apt-get update && apt-get install -y --no-install-recommends \	
     fftw3 \
+    ros-melodic-hector-gazebo-plugins \
     libcgal-dev \
     libclfft-dev \
     libfftw3-dev \
@@ -54,7 +55,7 @@ COPY /src/rs750 src/
 
 # Configure and build
 RUN source /opt/ros/melodic/setup.bash \
-    catkin config --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+    catkin config --install --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     && catkin build
 
 # Define entrypoint
