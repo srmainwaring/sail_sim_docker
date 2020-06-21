@@ -6,11 +6,18 @@ ARG TERM=xterm
 RUN apt-get update && apt-get install -y --no-install-recommends \
     apt-utils \
     build-essential \
+    libgl1-mesa-dri \
+    libgl1-mesa-glx \
+    mesa-common-dev \
+    mesa-opencl-icd \
+    mesa-utils \
+    mesa-utils-extra \
+    mesa-vulkan-drivers \
     python-pip \
     python-rosdep \
     python-rosinstall \
     python-rosinstall-generator \
-    # python-vcstool \    
+    # python-vcstool \
     wget \
     x11-apps \
     && rm -rf /var/lib/apt/lists/*
