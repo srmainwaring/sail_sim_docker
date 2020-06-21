@@ -22,7 +22,7 @@ services:
       - "ROS_MASTER_URI=http://ros-master:11311"
       - "ROS_HOSTNAME=gazebo"
       - "DISPLAY"
-      # - "SVGA_VGPU10=0" # Uncomment when running on VMware
+      - "SVGA_VGPU10=0"
     group_add:
       - video
     volumes:
