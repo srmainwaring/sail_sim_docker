@@ -31,5 +31,5 @@ Running (insecure):
 xhost +
 
 # Start the containers
-docker-compose up
+docker-compose -f docker-compose-vmware.yaml up
 ```

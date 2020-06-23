@@ -93,3 +93,23 @@ services:
     networks:
       - ros
     restart: always
+
+  rqt:
+    image: rhysmainwaring/sail-sim
+    depends_on:
+      - ros-master
+    devices:
+      - /dev/dri
+    environment:
+      - "ROS_MASTER_URI=http://ros-master:11311"
+      - "ROS_HOSTNAME=rqt"
+      - "DISPLAY"
+    group_add:
+      - video
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    command: stdbuf -o L roslaunch rs750_viz view_robot_monitor.launch
+    networks:
+      - ros
+    restart: always
+  
