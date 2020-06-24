@@ -57,13 +57,14 @@ SHELL ["/bin/bash", "-c"]
 # Create a catkin workspace
 RUN mkdir -p /catkin_ws/src
 
-# Copy packages into the workspace
-WORKDIR /catkin_ws
-COPY /src/asv_sim/ src/asv_sim
-COPY /src/asv_wave_sim/ src/asv_wave_sim
-COPY /src/rs750/ src/rs750
+# Clone packages into the workspace
+WORKDIR /catkin_ws/src
+RUN git clone https://github.com/srmainwaring/asv_wave_sim.git -b feature/fft_waves \
+  && git clone https://github.com/srmainwaring/asv_sim.git -b feature/wrsc-devel \
+  && git clone https://github.com/srmainwaring/rs750.git -b feature/wrsc-devel
 
 # Configure, build and cleanup
+WORKDIR /catkin_ws
 RUN source /opt/ros/melodic/setup.bash \
     && catkin init \
     && catkin clean -y \
