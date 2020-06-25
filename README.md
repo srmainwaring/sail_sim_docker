@@ -3,6 +3,8 @@
 This project contains docker files to build and run a ROS / Gazebo
 simulation of a sailing robot.
 
+![Racing Sparrow 750 Simulation](https://github.com/srmainwaring/sail_sim_docker/wiki/images/ocean_waves_rs750_fft.jpg)
+
 ## Quick start
 
 ```bash
