@@ -57,6 +57,16 @@ git clone https://github.com/srmainwaring/sail_sim_docker.git
 docker build -t rhysmainwaring/sail-sim .
 ```
 
+
+## Build Status
+
+|    | Melodic |
+|--- |--- |
+| asv_wave_sim | [![Build Status](https://travis-ci.org/srmainwaring/asv_wave_sim.svg?branch=feature%2Ffft_waves)](https://travis-ci.org/srmainwaring/asv_wave_sim) |
+| asv_sim | [![Build Status](https://travis-ci.org/srmainwaring/asv_sim.svg?branch=feature%2Fwrsc-devel)](https://travis-ci.org/srmainwaring/asv_sim) |
+| rs750 | [![Build Status](https://travis-ci.org/srmainwaring/rs750.svg?branch=feature%2Fwrsc-devel)](https://travis-ci.org/srmainwaring/rs750) |
+
+
 ## License
 This is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
