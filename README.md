@@ -16,7 +16,7 @@ docker-compose -f docker-compose-nvidia.yaml up
 ```
 
 If you have an AMD card or are running from a virtual machine use
-`docker-compose-nvidia.yaml` instead.
+`docker-compose-vmware.yaml` instead. For WSL use `docker-compose-wsl.yaml`
 
 You will need to provide the containers `xhost` access to you machine:
 `xhost +` will do this but there are serious security concerns. For a
