@@ -50,6 +50,11 @@ Load the mission way points:
 - Click 'Write WPs' to load them to the flight controller
 - At this point you should see the waypoints in the MavProxy map.
 
+![Mission Editor](https://github.com/srmainwaring/sail_sim_docker/wiki/images/mission_editor.jpg)
+
+![Map Waypoints](https://github.com/srmainwaring/sail_sim_docker/wiki/images/map_waypoints.jpg)
+
+
 Prepare the sailboat:
 
 - In the `sim_vehicle.py` console arm the throttle: `MANUAL> arm throttle`
@@ -60,6 +65,11 @@ Update the Gazebo wind environment:
 - At initialisation the Gazebo environment settings are switched off. Without this the gyro and EFK calibration will not initialise correctly.
 - Using the Gazebo sidebar set the wind `linear_velocity.x = 10.0`
 - The sailboat should start moving under autopilot control around the triangular course.
+
+![Gazebo Auto](https://github.com/srmainwaring/sail_sim_docker/wiki/images/gazebo_mip.jpg)
+
+![Map Auto](https://github.com/srmainwaring/sail_sim_docker/wiki/images/map_mip.jpg)
+
 
 ## Dependencies
 
