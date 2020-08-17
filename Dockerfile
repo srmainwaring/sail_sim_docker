@@ -17,7 +17,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python-rosdep \
     python-rosinstall \
     python-rosinstall-generator \
-    # python-vcstool \
     wget \
     x11-apps \
     && rm -rf /var/lib/apt/lists/*
@@ -54,14 +53,16 @@ RUN pip install --upgrade \
 # Use bash
 SHELL ["/bin/bash", "-c"]
 
-# Create a catkin workspace
+#
+# Wave Gazebo plugin and rs750 sailboat model
+#
 RUN mkdir -p /catkin_ws/src
 
 # Clone packages into the workspace
 WORKDIR /catkin_ws/src
-RUN git clone https://github.com/srmainwaring/asv_wave_sim.git -b feature/fft_waves \
+RUN git clone https://github.com/srmainwaring/asv_wave_sim.git -b feature/ardupilot_sailboat_poc  \
   && git clone https://github.com/srmainwaring/asv_sim.git -b feature/wrsc-devel \
-  && git clone https://github.com/srmainwaring/rs750.git -b feature/wrsc-devel
+  && git clone https://github.com/srmainwaring/rs750.git -b feature/ardupilot_sailboat_poc
 
 # Configure, build and cleanup
 WORKDIR /catkin_ws
@@ -75,9 +76,66 @@ RUN source /opt/ros/melodic/setup.bash \
     && catkin build \
     && rm -rf .catkin_tools .vscode build devel logs src  
 
-# Define entrypoint
-COPY ./docker-entrypoint.sh /
-RUN chmod +x /docker-entrypoint.sh
+#
+# ArduPilot Gazebo plugin (not a catkin package)
+#
+RUN mkdir -p /gazebo_plugins
 
-ENTRYPOINT ["/docker-entrypoint.sh"]
+# Clone packages into the workspace, build and install ardupilot_gazebo
+WORKDIR /gazebo_plugins
+RUN  git clone https://github.com/srmainwaring/ardupilot_gazebo.git -b feature/gazebo_sailboat_poc \
+  && cd ardupilot_gazebo \
+  && mkdir build && cd build \
+  && cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo && make && make install && cd .. && rm -rf build
+
+#
+# ArduPilot - adapted from https://github.com/edrdo/ardupilot-sitl-docker
+#
+WORKDIR /ardupilot
+
+RUN useradd -U -d /ardupilot ardupilot && \
+    usermod -G users ardupilot
+
+RUN apt-get update && apt-get install --no-install-recommends -y \
+    lsb-release \
+    sudo \
+    software-properties-common \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV USER=ardupilot
+RUN cd / && git clone https://github.com/srmainwaring/ardupilot.git -b feature/gazebo_sailboat_poc
+
+RUN echo "ardupilot ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/ardupilot
+RUN chmod 0440 /etc/sudoers.d/ardupilot
+
+RUN chown -R ardupilot:ardupilot /ardupilot
+
+USER ardupilot
+RUN /ardupilot/Tools/environment_install/install-prereqs-ubuntu.sh -y
+RUN sudo apt-get clean \
+    && sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+RUN make sitl
+
+# Prebuild rover for SITL
+WORKDIR /ardupilot
+RUN ./waf configure --board sitl &&  ./waf rover
+
+ENV CCACHE_MAXSIZE=1G
+ENV PATH /usr/lib/ccache:/ardupilot/Tools:${PATH}
+ENV PATH /ardupilot/Tools/autotest:${PATH}
+ENV PATH /ardupilot/.local/bin:${PATH}
+
+# Define shell scripts used to start Gazebo and SITL
+COPY ./gazebo_entrypoint.sh /gazebo_entrypoint.sh
+COPY ./process1.sh /process1.sh
+COPY ./process2.sh /process2.sh
+COPY ./multi_process.sh /multi_process.sh
+RUN sudo chmod +x /gazebo_entrypoint.sh \
+    &&  sudo chmod +x /process1.sh \
+    && sudo chmod +x /process2.sh \
+    && sudo chmod +x /multi_process.sh
+
+# Clear the inherited ROS entrypoint
+ENTRYPOINT [""]
 CMD ["bash"]

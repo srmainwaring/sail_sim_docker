@@ -1,110 +1,28 @@
 version: '2.3'
 
 networks:
-  ros:
+  ardupilot:
     driver: bridge
 
 services:
-  ros-master:
-    image: rhysmainwaring/sail-sim
-    command: stdbuf -o L roscore
-    networks:
-      - ros
-    restart: always
-
-  gazebo:
-    image: rhysmainwaring/sail-sim
-    depends_on:
-      - ros-master
+  # Start Gazebo and an xterm for SITL in the same container
+  # to enable them to use the loopback address 127.0.0.1 for
+  # communication.
+  gazebo-sitl:
+    image: rhysmainwaring/sail-sim-ardupilot
+    devices:
+      - /dev/dri
     environment:
-      - "ROS_MASTER_URI=http://ros-master:11311"
-      - "ROS_HOSTNAME=gazebo"
       - "NVIDIA_VISIBLE_DEVICES=all"
       - "NVIDIA_DRIVER_CAPABILITIES=all"
       - "XAUTHORITYS"
       - "DISPLAY"
+    group_add:
+      - video
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
-    command: stdbuf -o L roslaunch rs750_gazebo rs750_ocean_world.launch verbose:=true
+    command: ["/multi_process.sh"]
     runtime: nvidia
     networks:
-      - ros
+      - ardupilot
     restart: always
-
-  sail-controller:
-    image: rhysmainwaring/sail-sim
-    depends_on:
-      - ros-master
-    environment:
-      - "ROS_MASTER_URI=http://ros-master:11311"
-      - "ROS_HOSTNAME=sail-controller"
-    command: stdbuf -o L rosrun rs750_controller sail_controller
-    networks:
-      - ros
-    restart: always
-
-  twist-translate:
-    image: rhysmainwaring/sail-sim
-    depends_on:
-      - ros-master
-    environment:
-      - "ROS_MASTER_URI=http://ros-master:11311"
-      - "ROS_HOSTNAME=twist-translate"
-    command: stdbuf -o L rosrun rs750_controller twist_translate.py
-    networks:
-      - ros
-    restart: always
-
-  steering:
-    image: rhysmainwaring/sail-sim
-    depends_on:
-      - ros-master
-    environment:
-      - "ROS_MASTER_URI=http://ros-master:11311"
-      - "ROS_HOSTNAME=steering"
-      - "DISPLAY"
-    volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix:rw
-    command: stdbuf -o L rosrun rqt_robot_steering rqt_robot_steering
-    networks:
-      - ros
-    restart: always
-
-  rviz:
-    image: rhysmainwaring/sail-sim
-    depends_on:
-      - ros-master
-    environment:
-      - "ROS_MASTER_URI=http://ros-master:11311"
-      - "ROS_HOSTNAME=rviz"
-      - "NVIDIA_VISIBLE_DEVICES=all"
-      - "NVIDIA_DRIVER_CAPABILITIES=all"
-      - "XAUTHORITYS"
-      - "DISPLAY"
-    volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix:rw
-    command: stdbuf -o L roslaunch rs750_viz view_robot.launch
-    runtime: nvidia
-    networks:
-      - ros
-    restart: always
-
-  rqt:
-    image: rhysmainwaring/sail-sim
-    depends_on:
-      - ros-master
-    environment:
-      - "ROS_MASTER_URI=http://ros-master:11311"
-      - "ROS_HOSTNAME=rqt"
-      - "NVIDIA_VISIBLE_DEVICES=all"
-      - "NVIDIA_DRIVER_CAPABILITIES=all"
-      - "XAUTHORITYS"
-      - "DISPLAY"
-    volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix:rw
-    command: stdbuf -o L roslaunch rs750_viz view_robot_monitor.launch
-    runtime: nvidia
-    networks:
-      - ros
-    restart: always
-    

@@ -1,0 +1,26 @@
+version: '2'
+
+networks:
+  ardupilot:
+    driver: bridge
+
+services:
+
+  # Start Gazebo and an xterm for SITL in the same container
+  # to enable them to use the loopback address 127.0.0.1 for
+  # communication.
+  gazebo-sitl:
+    image: rhysmainwaring/sail-sim-ardupilot
+    devices:
+      - /dev/dri
+    environment:
+      - "DISPLAY"
+      - "SVGA_VGPU10=0"
+    group_add:
+      - video
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    command: ["/multi_process.sh"]
+    networks:
+      - ardupilot
+    restart: always

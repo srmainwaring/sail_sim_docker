@@ -50,3 +50,55 @@ ROS docker tutorials:
 ROS docker examples
 
 - [wilselby/ouster_example](https://github.com/wilselby/ouster_example).
+
+
+## ArduPilot specific
+
+ArduPilot docker image:
+
+- [edrdo/ardupilot-sitl-docker](https://github.com/edrdo/ardupilot-sitl-docker)
+
+Run with:
+
+```bash
+docker run --rm -it \
+  -v $(pwd):/external \
+  -v /tmp/.X11-unix:/tmp/.X11-unix \
+  -e DISPLAY=$DISPLAY \
+  -e "SIM_OPTIONS=--out=udpout:127.0.0.1:14550 \
+  -m --target-system=0 $SIM_OPTIONS" \
+  --entrypoint "/external/entryPoint.sh" \
+  edrdo/ardupilot-sitl-docker:latest 0
+```
+
+ArduPilot Gazebo plugins:
+
+Linux install location of Gazebo plugins
+
+```bash
+/usr/lib/x86_64-linux-gnu/gazebo-9/plugins/libArduPilotPlugin.so
+```
+
+ArduPilot SITL:
+
+Infer the mavproxy command line arguments from `sim_vehicle.py`:
+
+```bash
+mavproxy.py --map --console \
+  --out 127.0.0.1:14550 \
+  --out 127.0.0.1:14551 \
+  --master tcp:127.0.0.1:5760 \
+  --sitl 127.0.0.1:5501
+```
+
+Infer the ardupilot SITL command line arguments from running `sim_vehicle.py`:
+
+```console
+SIM_VEHICLE: "/home/rhys/Code/ardupilot/ardupilot/Tools/autotest/run_in_terminal_window.sh" "Rover" \
+  "/home/rhys/Code/ardupilot/ardupilot/build/sitl/bin/ardurover" "-S" \
+  "--model" "gazebo-sailboat" \
+  "--speedup" "1" \
+  "--defaults" "/home/rhys/Code/ardupilot/ardupilot/Tools/autotest/default_params/rover.parm,/home/rhys/Code/ardupilot/ardupilot/Tools/autotest/default_params/sailboat.parm" \
+  "-I0" \
+  "--home" "51.5734550122,-3.99302875275,0.0,1.0"
+```
