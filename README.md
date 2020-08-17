@@ -36,7 +36,7 @@ The simulation launches a number of screens:
 - MavProxy map
 
 The [ArduPilot Sailboat](https://ardupilot.org/rover/docs/sailboat-home.html) documentation has a guide to
-using sailing vehicles with ArduPilot, in particualr the sailing modes and parameter tuning.
+using sailing vehicles with ArduPilot, in particular the sailing modes and parameter tuning.
 
 The [ArduPilot SITL Simulator](https://ardupilot.org/dev/docs/sitl-simulator-software-in-the-loop.html)
 documentation explains how to configure and use the simulator.
