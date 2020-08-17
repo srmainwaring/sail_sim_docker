@@ -57,7 +57,7 @@ Load the mission way points:
 
 Prepare the sailboat:
 
-- In the `sim_vehicle.py` console arm the throttle: `MANUAL> arm throttle`
+- In the `sim_vehicle.py` console arm the throttle: `MANUAL> arm throttle force` (to override PreArm EKF calibration warnings)
 - Set the mode to auto: `MANUAL> mode auto`
 
 Update the Gazebo wind environment:
